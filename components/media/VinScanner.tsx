@@ -53,23 +53,22 @@ export function VinScanner({ onScan, onClose }: Props) {
 
   return (
     <View style={styles.fullscreen}>
-      <CameraView ref={cameraRef} style={styles.camera} facing="back">
+      <CameraView ref={cameraRef} style={styles.camera} facing="back" />
+
+      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
         {/* VIN scan overlay */}
         <View style={styles.overlay}>
           <Svg width="100%" height="100%" viewBox="0 0 400 440">
             <G opacity={0.7}>
-              {/* Scan window */}
               <Rect
                 x={30} y={170} width={340} height={80}
                 rx={8}
                 stroke="white" strokeWidth={2.5} fill="none"
               />
-              {/* Scan line */}
               <Line
                 x1={50} y1={210} x2={350} y2={210}
                 stroke={Colors.accent} strokeWidth={2}
               />
-              {/* Corner accents */}
               <Line x1={30} y1={185} x2={30} y2={170} stroke={Colors.accent} strokeWidth={3} />
               <Line x1={30} y1={170} x2={55} y2={170} stroke={Colors.accent} strokeWidth={3} />
               <Line x1={370} y1={185} x2={370} y2={170} stroke={Colors.accent} strokeWidth={3} />
@@ -107,7 +106,7 @@ export function VinScanner({ onScan, onClose }: Props) {
             <Ionicons name="scan" size={32} color="white" />
           </TouchableOpacity>
         </View>
-      </CameraView>
+      </View>
     </View>
   );
 }

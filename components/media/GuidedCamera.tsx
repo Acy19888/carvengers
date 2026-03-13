@@ -94,8 +94,11 @@ export function GuidedCamera({ category, onCapture, onClose }: Props) {
   // Camera mode
   return (
     <View style={styles.fullscreen}>
-      <CameraView ref={cameraRef} style={styles.camera} facing="back">
-        {/* Overlay guide */}
+      <CameraView ref={cameraRef} style={styles.camera} facing="back" />
+
+      {/* Overlay on top of camera (absolute positioned) */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+        {/* Guide overlay */}
         <CameraOverlay category={category} />
 
         {/* Top bar */}
@@ -117,7 +120,7 @@ export function GuidedCamera({ category, onCapture, onClose }: Props) {
             <View style={styles.shutterInner} />
           </TouchableOpacity>
         </View>
-      </CameraView>
+      </View>
     </View>
   );
 }
