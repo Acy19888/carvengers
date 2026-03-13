@@ -7,6 +7,7 @@ import {
   fetchCase, fetchVehicle, fetchCaseMedia,
   fetchFindings, generateMockFindings, fetchVinHistory,
 } from "../../services/firebase";
+import { estimateVehicleValue, ValuationResult } from "../../services/valuation";
 import {
   CASE_STATUS_LABELS, SERVICE_TIER_LABELS,
   MEDIA_CATEGORY_LABELS, SEVERITY_COLORS, SEVERITY_LABELS,
@@ -25,6 +26,7 @@ export default function CaseDetailScreen() {
   const [media, setMedia] = useState<CaseMedia[]>([]);
   const [findings, setFindings] = useState<Finding[]>([]);
   const [vinHistory, setVinHistory] = useState<InspectionCase[]>([]);
+  const [valuation, setValuation] = useState<ValuationResult | null>(null);
 
   useEffect(() => {
     loadAll();
@@ -48,8 +50,10 @@ export default function CaseDetailScreen() {
         if (f.length === 0 && c.status === "submitted") {
           const mocked = await generateMockFindings(c.id);
           setFindings(mocked);
+          if (v) { const val = await estimateVehicleValue(v, mocked); setValuation(val); }
         } else {
           setFindings(f);
+          if (v && f.length > 0) { const val = await estimateVehicleValue(v, f); setValuation(val); }
         }
 
         // Load VIN history
@@ -186,6 +190,46 @@ export default function CaseDetailScreen() {
 
       <Spacer size="md" />
 
+      {/* Valuation */}
+      {valuation && (
+        <>
+          <View style={styles.card}>
+            <Typo variant="body" style={styles.sectionTitle}>Fahrzeugbewertung</Typo>
+            <Spacer size="sm" />
+            <View style={{ alignItems: "center", paddingVertical: Spacing.sm }}>
+              <Typo variant="caption">Geschätzter Marktwert</Typo>
+              <Typo variant="h2" style={{ color: Colors.accent }}>
+                {valuation.estimatedMin.toLocaleString("de-DE")} – {valuation.estimatedMax.toLocaleString("de-DE")} €
+              </Typo>
+              <Spacer size="xs" />
+              <View style={[styles.condBadge, { backgroundColor: valuation.condition === "sehr gut" || valuation.condition === "gut" ? Colors.success : valuation.condition === "befriedigend" ? Colors.warning : Colors.error }]}>
+                <Typo variant="caption" color="#fff" style={{ fontWeight: "700", fontSize: 12 }}>
+                  Zustand: {valuation.condition}
+                </Typo>
+              </View>
+            </View>
+            {valuation.adjustments.length > 0 && (
+              <>
+                <Spacer size="sm" />
+                {valuation.adjustments.map((a, i) => (
+                  <View key={i} style={styles.adjustRow}>
+                    <Typo variant="caption" style={{ flex: 1, fontSize: FontSize.xs }}>{a.label}</Typo>
+                    <Typo variant="caption" style={{ fontSize: FontSize.xs, fontWeight: "700", color: a.amount < 0 ? Colors.error : Colors.success }}>
+                      {a.amount > 0 ? "+" : ""}{a.amount.toLocaleString("de-DE")} €
+                    </Typo>
+                  </View>
+                ))}
+              </>
+            )}
+            <Spacer size="xs" />
+            <Typo variant="caption" style={{ fontSize: 10, color: Colors.textMuted }}>
+              * Schätzung basiert auf Marktdaten, Alter, km-Stand und Befunden. Keine Garantie.
+            </Typo>
+          </View>
+          <Spacer size="md" />
+        </>
+      )}
+
       {/* VIN History */}
       <View style={styles.card}>
         <Typo variant="body" style={styles.sectionTitle}>
@@ -275,4 +319,6 @@ const styles = StyleSheet.create({
   findingItem: { flexDirection: "row", alignItems: "flex-start", paddingVertical: Spacing.sm, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
   dot: { width: 10, height: 10, borderRadius: 5, marginTop: 4, marginRight: Spacing.sm },
   historyItem: { flexDirection: "row", alignItems: "center", paddingVertical: Spacing.sm, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
+  condBadge: { paddingHorizontal: Spacing.md, paddingVertical: 4, borderRadius: Radius.full },
+  adjustRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
 });

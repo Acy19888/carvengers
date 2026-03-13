@@ -7,11 +7,13 @@ import { Screen, Button, Input, Typo, Spacer } from "../../components/ui";
 import { SocialButton } from "../../components/ui/SocialButton";
 import { loginSchema, LoginFormData } from "../../features/auth/schemas";
 import { useAuthStore } from "../../store/authStore";
+import { useTheme } from "../../store/themeContext";
 import { useGoogleAuthRequest, signInWithGoogle } from "../../services/firebase/googleAuth";
-import { Colors, FontSize, Spacing } from "../../constants/theme";
+import { FontSize, Spacing } from "../../constants/theme";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { login, loading, error, clearError } = useAuthStore();
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -57,7 +59,7 @@ export default function LoginScreen() {
     <Screen scroll>
       <Spacer size="xxl" />
       <Spacer size="xl" />
-      <Typo variant="h1" center style={styles.brand}>CARVENGERS</Typo>
+      <Typo variant="h1" center style={[styles.brand, { color: colors.accent }]}>CARVENGERS</Typo>
       <Spacer size="xs" />
       <Typo variant="caption" center>Gebrauchtwagenprüfung mit Vertrauen</Typo>
 
@@ -127,7 +129,7 @@ export default function LoginScreen() {
       />
 
       {error ? (
-        <Typo variant="caption" color={Colors.error} center>{error}</Typo>
+        <Typo variant="caption" color={colors.error} center>{error}</Typo>
       ) : null}
 
       <Spacer size="md" />
@@ -145,7 +147,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   brand: {
     letterSpacing: 3,
-    color: Colors.primary,
     fontSize: FontSize.xxl,
     fontWeight: "800",
   },
@@ -157,10 +158,10 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.border,
+    backgroundColor: "#E2E8F0",
   },
   dividerText: {
     marginHorizontal: Spacing.md,
-    color: Colors.textMuted,
+    color: "#94A3B8",
   },
 });

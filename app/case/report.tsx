@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Screen, Button, Typo, Spacer } from "../../components/ui";
 import { fetchCase, fetchVehicle, fetchCaseMedia, fetchFindings } from "../../services/firebase";
+import { generateAndSharePdf, printReport } from "../../services/reports";
 import { CASE_STATUS_LABELS, SERVICE_TIER_LABELS, SEVERITY_COLORS, SEVERITY_LABELS } from "../../constants/app";
 import { Colors, Spacing, Radius, FontSize } from "../../constants/theme";
 import { formatDate } from "../../utils/helpers";
@@ -43,6 +44,26 @@ export default function ReportScreen() {
       Alert.alert("Fehler", "Bericht konnte nicht geladen werden.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const reportData = caseData && vehicle ? { vehicle, inspectionCase: caseData, media, findings } : null;
+
+  const handleExportPdf = async () => {
+    if (!reportData) return;
+    try {
+      await generateAndSharePdf(reportData);
+    } catch (e) {
+      Alert.alert("Fehler", "PDF konnte nicht erstellt werden.");
+    }
+  };
+
+  const handlePrint = async () => {
+    if (!reportData) return;
+    try {
+      await printReport(reportData);
+    } catch (e) {
+      Alert.alert("Fehler", "Drucken fehlgeschlagen.");
     }
   };
 
@@ -207,10 +228,14 @@ export default function ReportScreen() {
       <Spacer size="lg" />
 
       <Button
-        label="PDF exportieren (demnächst)"
+        label="PDF exportieren & teilen"
+        onPress={handleExportPdf}
+      />
+      <Spacer size="sm" />
+      <Button
+        label="Bericht drucken"
         variant="outline"
-        disabled
-        onPress={() => {}}
+        onPress={handlePrint}
       />
 
       <Spacer size="xxl" />
