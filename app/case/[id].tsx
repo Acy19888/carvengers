@@ -266,7 +266,11 @@ export default function CaseDetailScreen() {
         <Button label="Fotos hochladen" onPress={() => router.push(`/case/upload?caseId=${caseData.id}`)} />
       )}
       {caseData.status !== "draft" && (
-        <Button label="Bericht anzeigen" onPress={() => router.push(`/case/report?caseId=${caseData.id}`)} />
+        <>
+          <Button label="KI-Analyse starten" onPress={() => router.push(`/case/analysis?caseId=${caseData.id}`)} />
+          <Spacer size="sm" />
+          <Button label="Bericht anzeigen" variant="outline" onPress={() => router.push(`/case/report?caseId=${caseData.id}`)} />
+        </>
       )}
 
       <Spacer size="xxl" />
