@@ -15,6 +15,7 @@ import { checkUmweltplakette, UmweltplaketteResult } from "../../services/umwelt
 import { verifyVinMatch, VinVerification } from "../../services/vinMatch";
 import { compareMarketPrice, MarketComparison } from "../../services/marketPrice";
 import { estimateVehicleValue, ValuationResult } from "../../services/valuation";
+import { generateFullReportPdf } from "../../services/reports";
 import { Colors, Spacing, Radius, FontSize } from "../../constants/theme";
 import type { InspectionCase, Vehicle, CaseMedia, Finding } from "../../types/models";
 
@@ -88,6 +89,18 @@ export default function AnalysisScreen() {
 
     } catch { Alert.alert("Fehler", "Analyse fehlgeschlagen."); }
     finally { setLoading(false); }
+  };
+
+  const handleExportPdf = async () => {
+    if (!vehicle || !caseData) return;
+    try {
+      await generateFullReportPdf({
+        vehicle, inspectionCase: caseData,
+        healthScore, dealRisk, travelDecision,
+        damages, tires, oil, serviceHistory,
+        market, negotiation, umwelt, vinMatch,
+      });
+    } catch { Alert.alert("Fehler", "PDF konnte nicht erstellt werden."); }
   };
 
   if (loading) {
@@ -357,6 +370,9 @@ export default function AnalysisScreen() {
 
       <Spacer size="lg" />
 
+      {/* PDF Export */}
+      <Button label="PDF exportieren & teilen" onPress={handleExportPdf} />
+      <Spacer size="sm" />
       <Button label="Zurück zur Übersicht" variant="outline" onPress={() => router.back()} />
 
       <Spacer size="xl" />
