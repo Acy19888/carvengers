@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Carvengers",
+    "slug": "carvengers",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "carvengers",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.carvengers.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0F172A"
+      },
+      "package": "com.carvengers.app",
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ]
+  }
+}
