@@ -19,7 +19,8 @@ export async function estimateVehicleValue(
   await delay(800);
 
   // Base price estimation (very simplified mock)
-  const age = new Date().getFullYear() - vehicle.year;
+  const age = Math.max(0, new Date().getFullYear() - (vehicle.year || 2020));
+  const mileage = Math.max(0, vehicle.mileage || 50000);
   const basePrices: Record<string, number> = {
     Volkswagen: 28000, "Mercedes-Benz": 42000, BMW: 40000, Audi: 38000,
     Opel: 22000, "Škoda": 24000, Ford: 23000, Toyota: 26000,
@@ -33,7 +34,7 @@ export async function estimateVehicleValue(
 
   // Mileage adjustment (~€0.05 per km over 15k/year expected)
   const expectedKm = age * 15000;
-  const kmDiff = vehicle.mileage - expectedKm;
+  const kmDiff = mileage - expectedKm;
   const kmAdjust = Math.round(kmDiff * -0.04);
 
   const adjustments: { label: string; amount: number }[] = [];

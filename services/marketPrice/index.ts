@@ -82,10 +82,11 @@ function getBasePrice(make: string, year: number, mileage: number): number {
     Mazda: 24000, Kia: 23000, Nissan: 22000, Honda: 25000,
   };
   const base = basePrices[make] ?? 25000;
-  const age = new Date().getFullYear() - year;
+  const age = Math.max(0, new Date().getFullYear() - (year || 2020));
   const ageFactor = Math.max(0.15, Math.pow(0.88, age));
-  const kmFactor = Math.max(0.5, 1 - (mileage / 300000) * 0.5);
-  return Math.round(base * ageFactor * kmFactor);
+  const km = Math.max(0, mileage || 50000);
+  const kmFactor = Math.max(0.5, 1 - (km / 300000) * 0.5);
+  return Math.round(base * ageFactor * kmFactor) || 15000;
 }
 
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)); }

@@ -143,7 +143,21 @@ export default function UploadScreen() {
 
   const submitCase = async () => {
     try {
-      if (caseId) await updateCaseStatus(caseId, "submitted");
+      if (caseId) {
+        await updateCaseStatus(caseId, "submitted");
+        // Send immediate notification
+        try {
+          const { notifyCaseEvent, scheduleNotification } = require("../../services/notifications");
+          await notifyCaseEvent("caseSubmitted", caseId);
+          // Schedule "report ready" notification after 30 seconds (mock delay)
+          await scheduleNotification(
+            "KI-Bericht fertig!",
+            "Dein Inspektionsbericht ist jetzt verfügbar.",
+            30,
+            { screen: "analysis", caseId },
+          );
+        } catch {}
+      }
       Alert.alert(
         "Hochgeladen",
         detectedMileage

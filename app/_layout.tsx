@@ -30,6 +30,14 @@ function RootContent() {
     return unsubscribe;
   }, []);
 
+  // Register push notifications
+  useEffect(() => {
+    try {
+      const { registerForPushNotifications } = require("../services/notifications");
+      registerForPushNotifications();
+    } catch {}
+  }, []);
+
   // Routing logic
   useEffect(() => {
     if (checkingOnboarding || authLoading) return;
